@@ -186,10 +186,20 @@ pipeline {
                             
                             
                             curl -v -k - u "":"" -X POST  --data '{"transition":{"id":"'$transition_id'"}} -H "Content-Type": application/json  https://estjira/*/*/issue/$jira_issue/transitions?expand=transitions.fields
-                                            
-                    
                             
-                            
+                            if [! -z "'''+attachment_name+'''"];then
+                                IFS=',' read -r -a name_array <<< "'''+attachment_name+'''"
+                                IFS=',' read -r -a content_array  <<< "'''+attachment_content+'''"
+
+                                for (( i=o; i<${#name_array[@]}; i++))
+                                do
+                                    filename='echo "$#name_array[i]" | sed -e 's/^[[:space]]*//''
+                                    curl -k -u "username":"pwd" "$(content_array[i])  > $filename
+                                    curl -v -k -u "username":${"pwd"} - POST H"X-Atlassian-Token:nocheck" -F file=@$filename" estjira///attachments
+                                done
+                           fi
+                                
+                                 
                             
                             
                             
