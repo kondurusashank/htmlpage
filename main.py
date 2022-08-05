@@ -37,16 +37,16 @@ pipeline {
                         
                         def props = readJSON file: 'jira_details.json'
                         summary_value = "${props.fields.summary}"
-                        issuetype_name="${}"
-                        reporter_name="${}"
-                        description="${}"
-                        fxver_arch="${}"
+                        issuetype_name="${props.fields.issuetype.name}"
+                        reporter_name="${props.fields.reporter.name}"
+                        description="${props.fields.description}"
+                        fxver_arch="${props.fields.fixVersions.archived}"
                         echo "Fix Version:${fxver_arch}"
-                        fxver_name="${}"
-                        fxver_reldate="${}"
-                        fxver_rel="${}"
-                        priority_name="${}"
-                        labels="${}"
+                        fxver_name="${props.fields.fixVersions.name}"
+                        fxver_reldate="${props.fields.fixVersions.releasedDate}"
+                        fxver_rel="${props.fields.fixVersions.released}"
+                        priority_name="${props.fields.priority.name}"
+                        labels="${props.fields.labels}"
                         components="${}"
                         try {
                             assignee_name = "${props.fields.assignee.name}"
@@ -56,25 +56,25 @@ pipeline {
                         }
                         epic_link = "${props.fields.customfield_12202}"
                         try{
-                            resolution_name ="${}"
+                            resolution_name ="${props.fields.resolution.name}"
                         }
                         catch(Exception ex) {
                             resolution_name=null
                         }
-                        attachment_name = "${}"
-                        attachment_content ="${}"
-                        comments="${}"
-                        status_name="${}"
-                        fxver_arch= sh().trim()
-                        fxver_name=sh().trim()
-                        fxver_reldate=sh().trim()
-                        fxver_rel=sh().trim()
-                        labels=sh().trim()
-                        epic_link=sh().trim()
-                        attachment_name=sh().trim()
-                        attachment_content=sh().trim()
-                        comments=sh().trim()
-                        status_name=sh().trim()
+                        attachment_name = "${props.fields.attachment.filename}"
+                        attachment_content ="${props.fields.attachment.cotent}"
+                        comments="${props.fields.comment.comments.content}"
+                        status_name="${props.fields.status.name}"
+                        fxver_arch= sh(returnStdout: true,script: "echo${fxver_arch}| cut -d'[' -f2}| cut -d']' -f1").trim()
+                        fxver_name=sh(returnStdout: true,script: "echo${fxver_name}| sed ).trim()
+                        fxver_reldate=sh(returnStdout: true,script: "echo${fxver_reldate}| cut ).trim()
+                        fxver_rel=sh(returnStdout: true,script: "echo${fxver_rel}| cut ).trim()
+                        labels=sh(returnStdout: true,script: "echo${labels}| cut ).trim()
+                        epic_link=sh(returnStdout: true,script: "echo${epic_link}| sed ).trim()
+                        attachment_name=sh(returnStdout: true,script: "echo${attachment_name}| cut ).trim()
+                        attachment_content=sh(returnStdout: true,script: "echo${attachment_content}| cut ).trim()
+                        comments=sh(returnStdout: true,script: "echo${comments}| cut ).trim()
+                        status_name=sh(returnStdout: true,script: "echo${status_name}| cut ).trim()
                         
                         
                         if (description=="null"){
@@ -99,17 +99,17 @@ pipeline {
                                     ],
                                     reporter:
                                     [
-                                        name:"${}"
+                                        name:"${reported_name}"
                                     ],
-                                    description:"${}"
+                                    description:"${description}"
                                 ],
                                 priority:
                                 [
-                                    name:"${}"
+                                    name:"${priority_name}"
                                 ],
                                 assignee:
                                 [
-                                    name:"${}"
+                                    name:"${assignee_name}"
                                 ]
                             ]
                         } else{
