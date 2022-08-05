@@ -1,5 +1,8 @@
 
-def genjira_url=""
+def from socket import AI_V4MAPPED
+
+
+genjira_url=""
 def estjira_url= ""
 def amap
 def status_name
@@ -151,6 +154,47 @@ pipeline {
                             ]
                         }
                         
+                        
+                        writeJSON file: 'estjira_inout.json', json:amap
+                        wrap([$class: 'MaskPasswordsBuildWrapper',varPasswordPairs:[[password: "${password}",var: 'PSWD'']]])){
+                            sh '''
+                            estjira::: curl::: post
+                            jira_issue=grep FTCPLAT jiraop|cut -d',' -f2|cut -d':' -f2| tr -d '"''
+                            
+                            if [-z $jira_issue]; then
+                                excho "Eoor in migrating" '''+line+''' "
+                                exit 1
+                            fi
+                            
+                            echo $jira_issue created from '''+Line+'''" >> estjira.output
+                            
+                            
+                            case "'''+status_name+'''" in Backlog")
+                                            tansition_id=11
+                                            ;;
+                                    "Selected for development")
+                                            transition_id=21
+                                            ;;
+                                    "In Progree")
+                                            transition_id=31
+                                            ;;
+                                    "Done")
+                                            transition_id: 41
+                                            ;;
+                            
+                            esac
+                            
+                            
+                            curl -v -k - u "":"" -X POST  --data '{"transition":{"id":"'$transition_id'"}} -H "Content-Type": application/json  https://estjira/*/*/issue/$jira_issue/transitions?expand=transitions.fields
+                                            
+                    
+                            
+                            
+                            
+                            
+                            
+                            '''
+                        }
                         
                         }
                 }
