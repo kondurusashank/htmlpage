@@ -109,7 +109,48 @@ pipeline {
                                     name:"${}"
                                 ]
                             ]
+                        } else{
+                            amap = [
+                                fields:
+                                [
+                                    project:
+                                    [
+                                        key:"FTCPLAT"
+                                    ],
+                                    summary:"${summary_value}",
+                                    issuetype:
+                                    [
+                                        name:"$issuetype_name}"
+                                    ],
+                                    reporter:
+                                    [
+                                        name:"${}"
+                                    ],
+                                    description:"${}"
+                                ],
+                                fixVersions:[
+                                [
+                                    archived:"${fxver_arch}",
+                                    name:"${fxver_name}",
+                                    releaseDate: "${fxver_reldate}",
+                                    released: "${fxver_rel}"
+                                ]],
+                                priority:
+                                [
+                                    name:"${priority_name}"
+                                ],
+                                assignee:
+                                [
+                                    name:"${assignee_name}"
+                                ],
+                                components:
+                                [
+                                    name: "${component_name}"
+                                ]
+                            ]
+                            ]
                         }
+                        
                         
                         }
                 }
