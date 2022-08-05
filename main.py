@@ -198,11 +198,32 @@ pipeline {
                                     curl -v -k -u "username":${"pwd"} - POST H"X-Atlassian-Token:nocheck" -F file=@$filename" estjira///attachments
                                 done
                            fi
+                            
+                            
+                            if [! -z "'''+comments+'''"];then
+                                IFS=',' read -r -a comments_array <<< "'''+comments+'''"
                                 
-                                 
+                                for (( c=o; c<${#comments_array[@]}; c++))
+                                do 
+                                    curl -k -u "":"" ${comments_array[c]} | python -m json.tool > comment$c.json
+                                    echo "{" > comment_input.json
+                                    cat comment$c.json | grep body | sed 's/,*\r*$//' >> comment_input.json
+                                    echo "}" >> comment_input.json
+                                    curl -v -k -u "":""  -X POST -H "Content-Type: application/json" -d @comment_input.json estjira_url
+                                done
+                            fi
                             
                             
+                            if [! -z "'''+labels+'''"];then
+                                IFS=',' read -r -a labels_array <<< "'''+labels+'''"
+                            fi
                             
+                            for (( l=o; l<${#labels_array[@]}; l++))
+                            do
+                            
+                                curl -v -k -u "":"" -X PUT --data '{"update":{"labels":[{"add":"'${labels_array[1]}'"}]}}' -H "Content-Type:application/json" estjira_url//issue/$jira_issue
+                            done
+                         
                             '''
                         }
                         
@@ -210,20 +231,13 @@ pipeline {
                 }
             }
         }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+                
+        stage('Send_email') {
+            steps{
+                script{
+                    emailext attachmentsPattern: '*.outbody,body:'attachedo/p file has issue ids migrated to estjira', subject: 'o/p of Genjira to ESTjira' to: 'tinkunaga.konduru@bacrlays.com'
+                }
+            }
+        }    
 }    
 }   
